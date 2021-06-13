@@ -1,6 +1,9 @@
 package com.nsg.pagingdemo;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.paging.PagedList;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -32,34 +35,49 @@ public class MainActivity extends AppCompatActivity {
         dateList = new ArrayList<>();
         recyclerView = findViewById(R.id.recycler_view);
 
-        blogAdapter = new blogAdapter(tittleList, dateList, this);
-
+//        blogAdapter = new blogAdapter(tittleList, dateList, this);
+//
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setHasFixedSize(true);
 
-        apiInterface service = RetrofitClientInstance.getRetrofitInstance().create(apiInterface.class);
-        Call<LoginResponse> call = service.getAll();
-
-
-        call.enqueue(new Callback<LoginResponse>() {
+        ItemViewModel itemViewModel = ViewModelProviders.of(this).get(ItemViewModel.class);
+        blogAdapter = new blogAdapter(this);
+        itemViewModel.listLiveData.observe(this, new Observer<PagedList<TestTitle>>() {
             @Override
-            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-
-                Toast.makeText(MainActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
-                Log.i("hello", String.valueOf(response.body().getStatus()));
-                for (TestTitle testTitle : response.body().getTestTitles()){
-                    tittleList.add(testTitle.getTitle());
-                    dateList.add(testTitle.getUpcomingDateTime());
-                }
-                recyclerView.setAdapter(blogAdapter);
-            }
-
-            @Override
-            public void onFailure(Call<LoginResponse> call, Throwable t) {
-                Log.i("hello",t.toString());
-                Toast.makeText(MainActivity.this, "hello", Toast.LENGTH_SHORT).show();
+            public void onChanged(PagedList<TestTitle> testTitles) {
+                blogAdapter.submitList(testTitles);
             }
         });
+        recyclerView.setAdapter(blogAdapter);
+
+
+        //
+//
+//        apiInterface service = RetrofitClientInstance.getRetrofitInstance().create(apiInterface.class);
+//        Call<LoginResponse> call = service.getAll();
+//
+//
+//        call.enqueue(new Callback<LoginResponse>() {
+//            @Override
+//            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+//
+//                Toast.makeText(MainActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+//                Log.i("hello", String.valueOf(response.body().getStatus()));
+//                for (TestTitle testTitle : response.body().getTestTitles()){
+//                    tittleList.add(testTitle.getTitle());
+//                    dateList.add(testTitle.getUpcomingDateTime());
+//                }
+//                recyclerView.setAdapter(blogAdapter);
+//            }
+//
+//            @Override
+//            public void onFailure(Call<LoginResponse> call, Throwable t) {
+//                Log.i("hello",t.toString());
+//                Toast.makeText(MainActivity.this, "hello", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+
     }
 }
 

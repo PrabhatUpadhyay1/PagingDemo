@@ -50,9 +50,7 @@ public class LoginResponse {
         this.data = data;
     }
 
-    public List<TestTitle> getTestTitles() {
-        return testTitles;
-    }
+    public List<TestTitle> getTestTitles() { return testTitles; }
 
     public void setTestTitles(List<TestTitle> testTitles) {
         this.testTitles = testTitles;

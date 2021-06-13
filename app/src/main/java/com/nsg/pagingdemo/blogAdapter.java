@@ -1,5 +1,6 @@
 package com.nsg.pagingdemo;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -9,21 +10,21 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.paging.PagedListAdapter;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class blogAdapter extends RecyclerView.Adapter<blogAdapter.MyViewHolder> {
+public class blogAdapter extends PagedListAdapter<TestTitle, blogAdapter.MyViewHolder> {
 
-    ArrayList<String> tittleList, dateList;
     Context context;
 
-    public blogAdapter(ArrayList<String> tittleList, ArrayList<String> dateList, Context context) {
-        this.tittleList = tittleList;
-        this.dateList = dateList;
+    public blogAdapter(Context context) {
+        super(DIFF_CALLBACK);
         this.context = context;
-    }
+     }
 
     @NonNull
     @Override
@@ -34,9 +35,9 @@ public class blogAdapter extends RecyclerView.Adapter<blogAdapter.MyViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull final MyViewHolder holder, int position) {
-
-        holder.tittle.setText(tittleList.get(position));
-        holder.description.setText((dateList.get(position)));
+        TestTitle testTitle = getItem(position);
+        holder.tittle.setText(testTitle.getTitle());
+        holder.description.setText(testTitle.getUpcomingDateTime());
 
 //        holder.full_view.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -48,11 +49,23 @@ public class blogAdapter extends RecyclerView.Adapter<blogAdapter.MyViewHolder> 
 //            }
 //        });
     }
+    private static DiffUtil.ItemCallback<TestTitle> DIFF_CALLBACK = new DiffUtil.ItemCallback<TestTitle>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull TestTitle oldItem, @NonNull TestTitle newItem) {
+            return oldItem.getTitle()==newItem.getTitle();
+        }
 
-    @Override
-    public int getItemCount() {
-        return tittleList.size();
-    }
+        @SuppressLint("DiffUtilEquals")
+        @Override
+        public boolean areContentsTheSame(@NonNull TestTitle oldItem, @NonNull TestTitle newItem) {
+            return oldItem.equals(newItem);
+        }
+    };
+
+//    @Override
+//    public int getItemCount() {
+//        return tittleList.size();
+//    }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView tittle,description,full_view;
